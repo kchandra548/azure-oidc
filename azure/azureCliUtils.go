@@ -76,31 +76,25 @@ func Login() AzureSubscription {
 }
 
 func GetUserDetails() AzureSubscription {
-	//get azure account details
-	fmt.Printf("Getting Azure account details\n")
 	response, error := executeCommand("az", "account", "show")
 	if error != nil || response == "" {
 		//Call azure login if error
 		fmt.Println("No logged in user found. Please login to Azure.")
 		subscription := Login()
 		return subscription
-
 	}
 	//convert to json
 	var azureAccount AzureSubscription
 	json.Unmarshal([]byte(response), &azureAccount)
 	return azureAccount
-	//fmt.Println(string(accountDetailsResponse))
 }
 
 func GetAzureSubscriptions() []AzureSubscription {
-	//get azure subscriptions
 	fmt.Printf("Getting Azure subscriptions\n")
 	response, error := executeCommand("az", "account", "list")
 	if error != nil || response == "" {
 		panic("No subscriptions found")
 	}
-	//convert to json
 	var subscriptions []AzureSubscription
 	json.Unmarshal([]byte(response), &subscriptions)
 	return subscriptions
@@ -113,21 +107,20 @@ func GetAzureTenants() []azureTenant {
 	return azureTenantList
 }
 
-// Change Active subscription
-//az account set --subscription "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
 func SetActiveSubscription(subscriptionId string) {
 	response, _ := executeCommand("az", "account", "set", "--subscription", subscriptionId)
 	fmt.Println(response)
+	fmt.Println("Active subscription set to " + subscriptionId)
 }
 
 // Change active tenant
 func SetActiveTenant(tenantId string) {
 	response, _ := executeCommand("az", "login", "--tenant", tenantId)
 	fmt.Println(response)
+	fmt.Println("Active tenant set to " + tenantId)
 }
 
 //Create Resource Group
-//az group create --name demoResourceGroup --location westus
 func CreateResourceGroup(resourceGroupName string, location string) resourceGroup {
 	response, _ := executeCommand("az", "group", "create", "--name", resourceGroupName, "--location", location)
 	var resourceGrp resourceGroup
@@ -136,7 +129,6 @@ func CreateResourceGroup(resourceGroupName string, location string) resourceGrou
 }
 
 //Get Resource Groups
-//az group list
 func GetResourceGroups() []resourceGroup {
 	response, _ := executeCommand("az", "group", "list")
 	var resourceGrpList []resourceGroup
@@ -145,7 +137,6 @@ func GetResourceGroups() []resourceGroup {
 }
 
 //Create role assignment
-//az role assignment create --assignee <user> --role <role> --scope <scope>
 func CreateRoleAssignment(subscriptionId string, resourceGrpName string, role string, servicePrincipalId string) {
 	var response string
 	if resourceGrpName == "" {

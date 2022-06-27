@@ -28,6 +28,7 @@ to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
 
 		// Check Github authentication status if not logged in login to Github
+		fmt.Println("Checking Github authentication status")
 		github.CheckStatus()
 
 		//Check Azure authentication status if not logged in login to Azure
@@ -74,11 +75,28 @@ to quickly create a Cobra application.`,
 		if tenant == "" {
 			fmt.Printf("Tenant is not provided. Using default tenant %s\n", subscriptionDetails.TenantId)
 			tenant = subscriptionDetails.TenantId
+		} else {
+			//Check if tenant is default tenant
+			if tenant != subscriptionDetails.TenantId {
+				fmt.Printf("Given tenant %s is not same as loggged in User default tenant %s\n", tenant, subscriptionDetails.TenantId)
+				fmt.Printf("Switchin to Tenant %s\n", tenant)
+				fmt.Println("Please login to Azure with the given tenant")
+				azure.SetActiveTenant(tenant)
+				subscriptionDetails = azure.GetUserDetails()
+			}
 		}
+
 		subscription := cmd.Flag("s").Value.String()
 		if subscription == "" {
 			fmt.Printf("Subscription is not provided. Using default subscription %s\n", subscriptionDetails.Id)
 			subscription = subscriptionDetails.Id
+		} else {
+			// Check if given subscription is same as logged in user subscription
+			if subscription != subscriptionDetails.Id {
+				fmt.Printf("Given subscription %s is not same as logged in user default subscription %s\n", subscription, subscriptionDetails.Id)
+				fmt.Printf("Switching subscription to %s\n", subscription)
+				azure.SetActiveSubscription(subscription)
+			}
 		}
 		resourceGroup := cmd.Flag("g").Value.String()
 		if resourceGroup == "" {
