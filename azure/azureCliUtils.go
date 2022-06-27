@@ -154,7 +154,9 @@ func CreateRoleAssignment(subscriptionId string, resourceGrpName string, role st
 		scope := "subscriptions/" + subscriptionId + "/resourceGroups/" + resourceGrpName
 		response, _ = executeCommand("az", "role", "assignment", "create", "--role", role, "--scope", scope, "--resource-group", resourceGrpName, "--assignee", servicePrincipalId)
 	}
-	fmt.Println(response)
+	if response == "" {
+		fmt.Println("Role assignment failed")
+	}
 }
 
 func executeCommand(name string, args ...string) (string, error) {
@@ -176,7 +178,6 @@ func executeCommand(name string, args ...string) (string, error) {
 func CreateAzureAADApp(appName string) azureApplication {
 	// body := `{"displayName:"` + appName + `"}`
 	response, _ := executeCommand("az", "ad", "app", "create", "--display-name", appName)
-	fmt.Println(response)
 	var azureApplication azureApplication
 	json.Unmarshal([]byte(response), &azureApplication)
 	if azureApplication.Id == "" || azureApplication.AppId == "" {
@@ -196,7 +197,6 @@ func CreateServicePrincipal(appId string) servicePrincipal {
 		panic("Failed to create service principal")
 	}
 	var servicePrincipal servicePrincipal
-	fmt.Println(response)
 	json.Unmarshal([]byte(response), &servicePrincipal)
 	if servicePrincipal.Id == "" {
 		panic("Failed to create service principal")
@@ -207,12 +207,11 @@ func CreateServicePrincipal(appId string) servicePrincipal {
 func CreateFIC(id string, federatedIdentityCredentials *FederatedIdentityCredentials) {
 
 	body, _ := json.Marshal(federatedIdentityCredentials)
-	response, _ := executeCommand("az", "rest",
+	executeCommand("az", "rest",
 		"--method", "post",
 		"--url", "https://graph.microsoft.com/beta/applications/"+id+"/federatedIdentityCredentials/",
 		"--headers", "Content-Type=application/json",
 		"--body", string(body))
-	fmt.Println(response)
 }
 
 func GetRoleDefinitions() []RoleDefinition {

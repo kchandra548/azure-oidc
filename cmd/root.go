@@ -220,7 +220,7 @@ to quickly create a Cobra application.`,
 		github.CreateSecrets(orgName, repoName, environment, "AZURE_SUBSCRIPTION_ID", subscription)
 		github.CreateSecrets(orgName, repoName, environment, "AZURE_RESOURCE_GROUP", resourceGroup)
 
-		fmt.Print("Gthub repo is now connected to Azure")
+		fmt.Println("🎉🎉 FINISHED!! Gthub repo is now connected to Azure")
 
 		fmt.Printf("Please visit Github Repo: https://github.com/%s/%s/settings", orgName, repoName)
 

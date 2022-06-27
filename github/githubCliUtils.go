@@ -3,6 +3,7 @@ package github
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/cli/go-gh"
@@ -11,9 +12,13 @@ import (
 
 //execute command
 func exec(args []string) (string, error) {
-	stdOut, _, err := gh.Exec(args...)
+	stdOut, err2, err := gh.Exec(args...)
+
 	if err != nil {
 		return "", err
+	}
+	if err2.Bytes() != nil {
+		return err2.String(), nil
 	}
 	return stdOut.String(), nil
 }
@@ -21,16 +26,21 @@ func exec(args []string) (string, error) {
 //Check status
 func CheckStatus() {
 	args := []string{"auth", "status"}
-	response, _ := exec(args)
+	response, err := exec(args)
+	fmt.Println(err)
 	fmt.Println(response)
-	if strings.Contains(response, "You are not logged into any GitHub hosts. Run gh auth login to authenticate.") {
-		login()
+	if strings.Contains(response, "You are not logged into any GitHub hosts") || strings.Contains(err.Error(), "You are not logged into any GitHub hosts") {
+		fmt.Println("No Active session found, please login using `gh auth login`")
+		os.Exit(1)
+		// login()
 	}
 }
 
 func login() {
 	args := []string{"auth", "login"}
-	response, _ := exec(args)
+	response, err := exec(args)
+
+	fmt.Println(err)
 	fmt.Println(response)
 }
 
