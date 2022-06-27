@@ -3,8 +3,10 @@ package github
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/cli/go-gh"
+	"github.com/cli/go-gh/pkg/api"
 )
 
 //execute command
@@ -20,8 +22,8 @@ func exec(args []string) (string, error) {
 func CheckStatus() {
 	args := []string{"auth", "status"}
 	response, _ := exec(args)
-	if response == "You are not logged into any GitHub hosts. Run gh auth login to authenticate." {
-		fmt.Println("You are not logged into any GitHub hosts. Run gh auth login to authenticate. Please login to continue.")
+	fmt.Println(response)
+	if strings.Contains(response, "You are not logged into any GitHub hosts. Run gh auth login to authenticate.") {
 		login()
 	}
 }
@@ -43,15 +45,19 @@ func GetRepositoriesList(orgName string) []resource {
 
 //Get Orgs list
 func GetOrgsList() []resource {
-	orgs := invokeAPI("organizations")
-	return orgs
+	var resources []resource
+	err := getRestClient().Get("user/orgs", &resources)
+	if err != nil {
+		fmt.Println("failed to get orgs")
+	}
+	return resources
 }
 
 //Create Repository Secrets
 func CreateSecrets(orgName string, repoName string, environment string, secretName string, secretValue string) {
 	args := []string{"secret", "set", secretName, "-R", orgName + "/" + repoName, "--body", secretValue}
 	if environment != "" {
-		args = append(args, "--environment")
+		args = append(args, "--env")
 		args = append(args, environment)
 	}
 	response, err := exec(args)
@@ -62,30 +68,38 @@ func CreateSecrets(orgName string, repoName string, environment string, secretNa
 }
 
 //Get Repository Environments
-func GetRepositoryEnvironments(orgName string, repoName string) {
+func GetRepositoryEnvironments(orgName string, repoName string) EnvironmnetsResponse {
 
-	environment := invokeAPI("/repos/" + orgName + "/" + repoName + "/environments")
-	fmt.Println(environment)
+	var environments EnvironmnetsResponse
+
+	er := getRestClient().Get("repos/"+orgName+"/"+repoName+"/environments", &environments)
+	if er != nil {
+		fmt.Println("failed to get environments")
+	}
+
+	return environments
 }
 
 //Invoke API
-func invokeAPI(uri string) []resource {
+func getRestClient() api.RESTClient {
 	client, err := gh.RESTClient(nil)
 	if err != nil {
 		fmt.Println(err)
-		return nil
+		panic("failed to get GH rest client")
 	}
-	var response []resource
-	err = client.Get(uri, &response)
-	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
-	return response
+	return client
 }
 
 type resource struct {
 	Name  string `json:"name"`
 	Id    int64  `json:"id"`
 	Login string `json:"login"`
+}
+
+type EnvironmnetsResponse struct {
+	Environmnets []Environment `json:"environments"`
+}
+type Environment struct {
+	Name string `json:"name"`
+	Id   int64  `json:"id"`
 }

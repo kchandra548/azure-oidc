@@ -57,6 +57,13 @@ type servicePrincipal struct {
 	Id string `json:"id"`
 }
 
+//Azure role definition struct
+type RoleDefinition struct {
+	Id       string `json:"id"`
+	RoleName string `json:"roleName"`
+	Name     string `json:"name"`
+}
+
 func Login() AzureSubscription {
 	//invoke az login command
 	response, error := executeCommand("az", "login")
@@ -160,7 +167,7 @@ func executeCommand(name string, args ...string) (string, error) {
 	}
 	response, err := ioutil.ReadAll(responsePipe)
 	if err != nil {
-		fmt.Errorf("Error reading response from command %s %s", name, args)
+		fmt.Errorf("error reading response from command %s %s", name, args)
 		return "", err
 	}
 	cmd.Wait()
@@ -206,4 +213,11 @@ func CreateFIC(id string, federatedIdentityCredentials *FederatedIdentityCredent
 		"--headers", "Content-Type=application/json",
 		"--body", string(body))
 	fmt.Println(response)
+}
+
+func GetRoleDefinitions() []RoleDefinition {
+	response, _ := executeCommand("az", "role", "definition", "list")
+	var roleDefinitions []RoleDefinition
+	json.Unmarshal([]byte(response), &roleDefinitions)
+	return roleDefinitions
 }
