@@ -29,7 +29,7 @@ func CheckStatus() {
 	response, err := exec(args)
 	fmt.Println(err)
 	fmt.Println(response)
-	if strings.Contains(response, "You are not logged into any GitHub hosts") || strings.Contains(err.Error(), "You are not logged into any GitHub hosts") {
+	if strings.Contains(response, "You are not logged into any GitHub hosts") || (err != nil && strings.Contains(err.Error(), "You are not logged into any GitHub hosts")) {
 		fmt.Println("No Active session found, please login using `gh auth login`")
 		os.Exit(1)
 		// login()
