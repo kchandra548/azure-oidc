@@ -237,6 +237,7 @@ func resolveAzureSubscription(subscriptionDetails *azure.AzureSubscription) {
 
 		subscription = propmptOptions("Please select the subscription you want to connect to", subscriptionOptions)
 		subscription = strings.Split(subscription, "(")[1]
+		subscription = strings.Split(subscription, ")")[0]
 		if subscription != subscriptionDetails.Id {
 			azure.SetActiveSubscription(subscription)
 			*subscriptionDetails = azure.GetUserDetails()

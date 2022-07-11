@@ -146,14 +146,14 @@ func GetResourceGroups() []resourceGroup {
 //Create role assignment
 func CreateRoleAssignment(subscriptionId string, resourceGrpName string, role string, servicePrincipalId string) {
 	var response string
+	var scope string
 	if resourceGrpName == "" {
-		scope := "subscriptions/" + subscriptionId
-		response, _ = executeCommand("az", "role", "assignment", "create", "--role", role, "--scope", scope, "--assignee", servicePrincipalId)
-
+		scope = "subscriptions/" + subscriptionId
 	} else {
-		scope := "subscriptions/" + subscriptionId + "/resourceGroups/" + resourceGrpName
-		response, _ = executeCommand("az", "role", "assignment", "create", "--role", role, "--scope", scope, "--resource-group", resourceGrpName, "--assignee", servicePrincipalId)
+		scope = "subscriptions/" + subscriptionId + "/resourceGroups/" + resourceGrpName
 	}
+
+	response, _ = executeCommand("az", "role", "assignment", "create", "--role", role, "--scope", scope, "--assignee", servicePrincipalId)
 	if response == "" {
 		fmt.Println("Role assignment failed")
 	}
