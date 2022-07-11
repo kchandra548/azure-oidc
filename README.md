@@ -9,18 +9,20 @@
 
 ## With Defaults
 
+`azure-oidc --useDefaults yes --org <gh-org> --repo <gh-repo>`
+
+by setting useDefaults to yes, the following defaults will be used from the Azure CLI session:
+* Subscription ID
+* Tenant ID
 
 
-https://user-images.githubusercontent.com/86251615/175929861-0707a2e9-d5c1-4de4-9b9e-87bf0d049a12.mov
 
-
-
+And the following default values will be used:
+* Role as `Contributor`
+* Resource Group as `<org>-<repo>-<env>`
 
 ## Without Defaults
 
+`azure-oidc --org <gh-org> --repo <gh-repo> --enviroment <gh-repo-env> --tenant <tenant-id> --subscription <subscription-id> --role <role-name> --resource-group <resource-group-name>  --role <role>`
 
-
-
-
-https://user-images.githubusercontent.com/86251615/175928879-a4e81564-a6bc-43a6-8935-787f32700d96.mov
-
+Note: All the flags/arguments are optional. If you don't specify any value, it will prompt you for it.
