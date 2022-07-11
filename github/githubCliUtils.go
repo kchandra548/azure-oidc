@@ -70,11 +70,10 @@ func CreateSecrets(orgName string, repoName string, environment string, secretNa
 		args = append(args, "--env")
 		args = append(args, environment)
 	}
-	response, err := exec(args)
+	_, err := exec(args)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(response)
 }
 
 //Get Repository Environments
