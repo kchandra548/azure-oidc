@@ -88,7 +88,7 @@ var rootCmd = &cobra.Command{
 		createAndConfigureAzureResources()
 
 		//Create secrets for Github
-		fmt.Println("Creating environment variable for github repo")
+		fmt.Println("Adding secrets")
 		github.CreateSecrets(org, repo, environment, "AZURE_TENANT_ID", tenant)
 		github.CreateSecrets(org, repo, environment, "AZURE_SUBSCRIPTION_ID", subscription)
 		github.CreateSecrets(org, repo, environment, "AZURE_RESOURCE_GROUP", resourceGroup)
@@ -179,6 +179,7 @@ func resolveDefaultValues(subscriptionDetails azure.AzureSubscription) {
 			resourceGroup = resourceGroup + "-" + environment
 		}
 		fmt.Println("Creating a new resource group: " + resourceGroup)
+		azure.CreateResourceGroup(resourceGroup, "eastus")
 	}
 	if role == "" {
 		role = "Contributor"
