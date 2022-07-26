@@ -1,11 +1,11 @@
-# azuer-oidc
+# azure-oidc
 ## Prerequisites
 * Azure CLI (Install from [here](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli))
 * GH CLI (Install from [here](https://github.com/cli/cli#installation))
 
 ## Installation
 * Run `go build`
-* Run `azuer-oidc`
+* Run `azure-oidc`
 
 ## With Defaults
 
